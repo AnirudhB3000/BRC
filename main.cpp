@@ -2,11 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <cstring>
 #include <algorithm>
 #include <cstdlib>
-
-//TODO: Make getCityIndex and compareResults private functions in a NaiveMethod class
 
 struct Result {
     std::string city;
@@ -14,47 +11,58 @@ struct Result {
     double sum, min, max;
 };
 
-int getCityIndex(const std::string &city, const std::vector<Result> &results) {
-    /*
-    Args:
-    city: string of city
-    results: required data
+class NaiveMethod {
+    std::ifstream fh;
+    std::vector<Result> results;
 
-    Functionality:
-    Helper function for naiveMethod, returns the index of the city.
-    */
+    int getCityIndex(const std::string &city, const std::vector<Result> &results) const {
+        /*
+        Args:
+        city: string of city
+        results: required data
 
-    for (size_t i = 0; i < results.size(); ++i) {
-        if (results[i].city == city) {
-            return i;
+        Functionality:
+        Helper function for naiveMethod, returns the index of the city.
+        */
+        for (size_t i = 0; i < results.size(); ++i) {
+            if (results[i].city == city) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    static bool compareResults(const Result &a, const Result &b) {
+        /*
+        Args:
+        a, b: cities
+
+        Functionality:
+        Helper function for naiveMethod
+        */
+        return a.city < b.city;
+    }
+
+public:
+    NaiveMethod(const std::string &file) {
+        fh.open(file);
+        if (!fh) {
+            std::cerr << "\nError opening file" << std::endl;
+            std::exit(EXIT_FAILURE);
         }
     }
-    return -1;
-}
 
-bool compareResults(const Result &a, const Result &b) {
-    /*
-    Args:
-    a, b: cities
-
-    Functionality:
-    Helper function for naiveMethod
-    */
-    return a.city < b.city;
-}
-
-void naiveMethod(std::ifstream &fh, std::vector<Result> &results) {
-    /*
-    Args:
-    fh: the file scanned from disk
-    results: the output vector
-    
-    Functionality:
-    Modified the vector results to the required output
-    */
-    std::string line;
-
-    while (std::getline(fh, line)) {
+    void process() {
+        /*
+        Args:
+        fh: the file scanned from disk
+        results: the output vector
+        
+        Functionality:
+        Modified the vector results to the required output
+        */
+        std::string line;
+        while (std::getline(fh, line)) {
             size_t pos = line.find(';');
             if (pos == std::string::npos) continue;
 
@@ -77,8 +85,13 @@ void naiveMethod(std::ifstream &fh, std::vector<Result> &results) {
             }
         }
 
-    std::sort(results.begin(), results.end(), compareResults);
-}
+        std::sort(results.begin(), results.end(), compareResults);
+    }
+
+    const std::vector<Result>& getResults() const {
+        return results;
+    }
+};
 
 int main(int argc, char *argv[]) {
     /*
@@ -95,37 +108,30 @@ int main(int argc, char *argv[]) {
     }
 
     if (argc > 2) {
-        file = argv[1];
         fileToBeWrittenTo = argv[2];
     }
 
-    std::ifstream fh(file);
-    if (!fh) {
-        std::cerr << "\nerror opening file" << std::endl;
-        return EXIT_FAILURE;
-    }
+    std::cout << "\nInput file " << fileToBeWrittenTo << " has been read." << std::endl;
 
-    std::cout << "Input file " << file << " has been processed...";
+    NaiveMethod nm(file);
+    nm.process();
+    const std::vector<Result>& results = nm.getResults();
 
-    std::vector<Result> results;
+    std::cout << "\nProcessor function has been executed." << std::endl;
 
-    naiveMethod(fh, results);
-
-    std::cout << "\nProcessing function executed...";
-    
     std::ofstream outFile(fileToBeWrittenTo);
     if (!outFile) {
-        std::cerr << "\nerror opening output file" << std::endl;
+        std::cerr << "\nError opening output file" << std::endl;
         return EXIT_FAILURE;
     }
 
-    for (size_t i = 0; i < results.size(); ++i) {
-        outFile << results[i].city << "=" << results[i].min << "/"
-                << results[i].sum / results[i].count << "/" << results[i].max 
+    for (const auto& result : results) {
+        outFile << result.city << "=" << result.min << "/"
+                << result.sum / result.count << "/" << result.max 
                 << std::endl;
     }
 
-    std::cout << "\nOutput file " << fileToBeWrittenTo << " has been written to.";
+    std::cout << "\nOutput file " << fileToBeWrittenTo << " has been written to." << std::endl;
 
     return 0;
 }
