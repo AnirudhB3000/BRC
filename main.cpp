@@ -26,7 +26,7 @@ bool compareResults(const Result &a, const Result &b) {
 }
 
 int main(int argc, char *argv[]) {
-    std::string file = "input.txt";
+    std::string file = "weather_stations.csv";
     if (argc > 1) {
         file = argv[1];
     }
@@ -64,12 +64,17 @@ int main(int argc, char *argv[]) {
 
     std::sort(results.begin(), results.end(), compareResults);
 
-    for (size_t i = 0; i < results.size(); ++i) {
-        std::cout << results[i].city << "=" << results[i].min << "/"
-                  << results[i].sum / results[i].count << "/" << results[i].max
-                  << (i < results.size() - 1 ? ", " : "");
+    std::ofstream outFile("output.txt");
+    if (!outFile) {
+        std::cerr << "error opening output file" << std::endl;
+        return EXIT_FAILURE;
     }
-    std::cout << std::endl;
+
+    for (size_t i = 0; i < results.size(); ++i) {
+        outFile << results[i].city << "=" << results[i].min << "/"
+                << results[i].sum / results[i].count << "/" << results[i].max 
+                << std::endl;
+    }
 
     return 0;
 }
