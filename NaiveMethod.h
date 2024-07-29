@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include "Result.h"
+#include <chrono>
 
 class NaiveMethod {
     std::ifstream fh;
@@ -18,7 +19,7 @@ class NaiveMethod {
         results: required data
 
         Functionality:
-        Helper function for naiveMethod, returns the index of the city.
+        Helper function for process(), returns the index of the city.
         */
         for (size_t i = 0; i < results.size(); ++i) {
             if (results[i].city == city) {
@@ -34,7 +35,7 @@ class NaiveMethod {
         a, b: cities
 
         Functionality:
-        Helper function for naiveMethod
+        Helper function for process()
         */
         return a.city < b.city;
     }
@@ -48,15 +49,14 @@ public:
         }
     }
 
-    void process() {
+    double process() {
         /*
-        Args:
-        fh: the file scanned from disk
-        results: the output vector
-        
         Functionality:
         Modified the vector results to the required output
+        Returns the time of execution
         */
+        auto start = std::chrono::high_resolution_clock::now();
+
         std::string line;
         while (std::getline(fh, line)) {
             size_t pos = line.find(';');
@@ -79,12 +79,21 @@ public:
                     results[c].max = measurement;
                 }
             }
+
         }
 
         std::sort(results.begin(), results.end(), compareResults);
+
+        fh.close();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+
+        return duration.count();
     }
 
     const std::vector<Result>& getResults() const {
+
         return results;
     }
 };

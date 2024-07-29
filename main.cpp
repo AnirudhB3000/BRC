@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include "NaiveMethod.h"
 #include "Result.h"
+#include "MapReduce.h"
 
 int main(int argc, char *argv[]) {
     /*
@@ -17,6 +18,8 @@ int main(int argc, char *argv[]) {
    
     std::string file = "weather_stations.csv";
     std::string fileToBeWrittenTo = "output.txt";
+    std::string timeTrackerFile = "tracker.txt";
+
     if (argc > 1) {
         file = argv[1];
     }
@@ -27,11 +30,20 @@ int main(int argc, char *argv[]) {
 
     std::cout << "\nInput file " << file << " has been read." << std::endl;
 
-    NaiveMethod nm(file);
-    nm.process();
-    const std::vector<Result>& results = nm.getResults();
+
+    MapReduceMethod brc(file);
+    double time_taken = brc.process();
+    const std::vector<Result>& results = brc.getResults();
 
     std::cout << "\nProcessor function has been executed." << std::endl;
+
+    std::map<std::string, double> time_taken_map;
+    time_taken_map["Map Reduce Method"] = time_taken;
+
+    NaiveMethod brc2(file);
+    double time_taken2 = brc2.process();
+    const std::vector<Result>& results2 = brc.getResults();
+    time_taken_map["Naive Method"] = time_taken2;
 
     std::ofstream outFile(fileToBeWrittenTo);
     if (!outFile) {
@@ -45,7 +57,20 @@ int main(int argc, char *argv[]) {
                 << std::endl;
     }
 
+    outFile.close();
     std::cout << "\nOutput file " << fileToBeWrittenTo << " has been written to." << std::endl;
+
+    std::ofstream timeTrackerOut(timeTrackerFile);
+    if (!timeTrackerOut) {
+        std::cerr << "\nError opening time tracker file" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    for (auto iter : time_taken_map) {
+        timeTrackerOut << iter.first << ": " << iter.second << std::endl;
+    }
+    timeTrackerOut.close();
+    std::cout << "\nTime tracker file " << timeTrackerFile << " has been written to." << std::endl;
 
     return 0;
 }
