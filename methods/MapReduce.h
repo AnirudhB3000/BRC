@@ -6,10 +6,10 @@
 #include <algorithm>
 #include <numeric>
 #include <cstdlib>
-#include "Result.h"
 #include <map>
 #include <chrono>
-#include "BillionRowChallenge.h"
+#include "../utils/Result.h"
+#include "../utils/BillionRowChallenge.h"
 
 class MapReduceMethod : public BillionRowChallenge{
     std::ifstream fh;

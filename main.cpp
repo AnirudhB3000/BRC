@@ -4,10 +4,10 @@
 #include <string>
 #include <algorithm>
 #include <cstdlib>
-#include "NaiveMethod.h"
-#include "Result.h"
-#include "MapReduce.h"
-#include "BillionRowChallenge.h"
+#include "methods/NaiveMethod.h"
+#include "methods/MapReduce.h"
+#include "utils/Result.h"
+#include "utils/BillionRowChallenge.h"
 #include <memory>
 
 void compareMethods(
@@ -17,7 +17,7 @@ void compareMethods(
     ) {
         for (const auto &method : methods) {
             double time_taken = method->process();
-            const std::vector<Result> &results = method->getResults();
+            results = method->getResults();
 
             std::string class_name = method->getClassName();
 
@@ -35,9 +35,9 @@ int main(int argc, char *argv[]) {
     The processing function takes in two inputs; the file and the result vector.
     */
    
-    std::string file = "weather_stations.csv";
-    std::string fileToBeWrittenTo = "output.txt";
-    std::string timeTrackerFile = "tracker.txt";
+    std::string file = "data/weather_stations.csv";
+    std::string fileToBeWrittenTo = "data/output.txt";
+    std::string timeTrackerFile = "data/tracker.txt";
 
     if (argc > 1) {
         file = argv[1];
@@ -49,20 +49,6 @@ int main(int argc, char *argv[]) {
 
     std::cout << "\nInput file " << file << " has been read." << std::endl;
 
-
-    // MapReduceMethod brc(file);
-    // double time_taken = brc.process();
-    // const std::vector<Result>& results = brc.getResults();
-
-    // std::cout << "\nProcessor function has been executed." << std::endl;
-
-    // std::map<std::string, double> time_taken_map;
-    // time_taken_map["Map Reduce Method"] = time_taken;
-
-    // NaiveMethod brc2(file);
-    // double time_taken2 = brc2.process();
-    // const std::vector<Result>& results2 = brc.getResults();
-    // time_taken_map["Naive Method"] = time_taken2;
     std::vector<std::unique_ptr<BillionRowChallenge>> methods;
     std::map<std::string, double> time_taken_map;
     std::vector<Result> results;

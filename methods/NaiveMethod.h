@@ -5,9 +5,9 @@
 #include <string>
 #include <algorithm>
 #include <cstdlib>
-#include "Result.h"
 #include <chrono>
-#include "BillionRowChallenge.h"
+#include "../utils/Result.h"
+#include "../utils/BillionRowChallenge.h"
 
 class NaiveMethod : public BillionRowChallenge {
     std::ifstream fh;
