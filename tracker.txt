@@ -1,2 +1,2 @@
-Map Reduce Method: 0.151449
-Naive Method: 9.95085
+MapReduce Method: 0.155699
+Naive Method: 9.82967

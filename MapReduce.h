@@ -9,8 +9,9 @@
 #include "Result.h"
 #include <map>
 #include <chrono>
+#include "BillionRowChallenge.h"
 
-class MapReduceMethod {
+class MapReduceMethod : public BillionRowChallenge{
     std::ifstream fh;
     std::vector<Result> results;
 
@@ -67,7 +68,7 @@ public:
         }
     }
 
-    double process() {
+    double process() override {
         /*
         Functionality:
         Modified the vector results to the required output
@@ -89,7 +90,11 @@ public:
         return duration.count();
     }
 
-    const std::vector<Result>& getResults() const {
+    const std::vector<Result>& getResults() const override {
         return results;
+    }
+
+    std::string getClassName() const override {
+        return "MapReduce Method";
     }
 };

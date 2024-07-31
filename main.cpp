@@ -7,6 +7,25 @@
 #include "NaiveMethod.h"
 #include "Result.h"
 #include "MapReduce.h"
+#include "BillionRowChallenge.h"
+#include <memory>
+
+void compareMethods(
+    const std::vector<std::unique_ptr<BillionRowChallenge>> &methods,
+    std::map<std::string, double> &time_taken_map,
+    std::vector<Result> &results
+    ) {
+        for (const auto &method : methods) {
+            double time_taken = method->process();
+            const std::vector<Result> &results = method->getResults();
+
+            std::string class_name = method->getClassName();
+
+            std::cout << "\nProcessor function has been executed for " << class_name << "." << std::endl;
+
+            time_taken_map[class_name] = time_taken;
+        }
+    }
 
 int main(int argc, char *argv[]) {
     /*
@@ -31,19 +50,27 @@ int main(int argc, char *argv[]) {
     std::cout << "\nInput file " << file << " has been read." << std::endl;
 
 
-    MapReduceMethod brc(file);
-    double time_taken = brc.process();
-    const std::vector<Result>& results = brc.getResults();
+    // MapReduceMethod brc(file);
+    // double time_taken = brc.process();
+    // const std::vector<Result>& results = brc.getResults();
 
-    std::cout << "\nProcessor function has been executed." << std::endl;
+    // std::cout << "\nProcessor function has been executed." << std::endl;
 
+    // std::map<std::string, double> time_taken_map;
+    // time_taken_map["Map Reduce Method"] = time_taken;
+
+    // NaiveMethod brc2(file);
+    // double time_taken2 = brc2.process();
+    // const std::vector<Result>& results2 = brc.getResults();
+    // time_taken_map["Naive Method"] = time_taken2;
+    std::vector<std::unique_ptr<BillionRowChallenge>> methods;
     std::map<std::string, double> time_taken_map;
-    time_taken_map["Map Reduce Method"] = time_taken;
+    std::vector<Result> results;
 
-    NaiveMethod brc2(file);
-    double time_taken2 = brc2.process();
-    const std::vector<Result>& results2 = brc.getResults();
-    time_taken_map["Naive Method"] = time_taken2;
+    methods.push_back(std::make_unique<MapReduceMethod>(file));
+    methods.push_back(std::make_unique<NaiveMethod>(file));
+
+    compareMethods(methods, time_taken_map, results);
 
     std::ofstream outFile(fileToBeWrittenTo);
     if (!outFile) {
