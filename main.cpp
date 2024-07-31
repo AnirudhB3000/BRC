@@ -14,6 +14,15 @@ void compareMethods(
     const std::vector<std::unique_ptr<BillionRowChallenge>> &methods,
     std::map<std::string, double> &time_taken_map,
     std::vector<Result> &results
+    /*
+    Args:
+    methods: vector of all the classes to be compared
+    time_taken_map: map of all the timings
+    results: vector of the results.
+
+    Functionality:
+    Compares the methods specified in methods.
+    */
     ) {
         for (const auto &method : methods) {
             double time_taken = method->process();
@@ -45,6 +54,10 @@ int main(int argc, char *argv[]) {
 
     if (argc > 2) {
         fileToBeWrittenTo = argv[2];
+    }
+
+    if (argc > 3) {
+        timeTrackerFile = argv[3];
     }
 
     std::cout << "\nInput file " << file << " has been read." << std::endl;
