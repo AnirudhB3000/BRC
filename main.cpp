@@ -13,7 +13,7 @@
 void compareMethods(
     const std::vector<std::unique_ptr<BillionRowChallenge>> &methods,
     std::map<std::string, double> &time_taken_map,
-    std::vector<Result> &results
+    std::map<std::string, std::vector<Result>> &results_map
     /*
     Args:
     methods: vector of all the classes to be compared
@@ -26,13 +26,16 @@ void compareMethods(
     ) {
         for (const auto &method : methods) {
             double time_taken = method->process();
-            results = method->getResults();
+            std::vector<Result> results = method->getResults();
 
             std::string class_name = method->getClassName();
 
+            time_taken_map[class_name] = time_taken;
+
+            results_map[class_name] = results;
+
             std::cout << "\nProcessor function has been executed for " << class_name << "." << std::endl;
 
-            time_taken_map[class_name] = time_taken;
         }
     }
 
@@ -45,7 +48,7 @@ int main(int argc, char *argv[]) {
     */
    
     std::string file = "data/weather_stations.csv";
-    std::string fileToBeWrittenTo = "data/output.txt";
+    std::string fileToBeWrittenTo = "data/outputs/output";
     std::string timeTrackerFile = "data/tracker.txt";
 
     if (argc > 1) {
@@ -64,28 +67,38 @@ int main(int argc, char *argv[]) {
 
     std::vector<std::unique_ptr<BillionRowChallenge>> methods;
     std::map<std::string, double> time_taken_map;
-    std::vector<Result> results;
+    std::map<std::string, std::vector<Result>> results_map;
 
     methods.push_back(std::make_unique<MapReduceMethod>(file));
     methods.push_back(std::make_unique<NaiveMethod>(file));
 
-    compareMethods(methods, time_taken_map, results);
+    compareMethods(methods, time_taken_map, results_map);
 
-    std::ofstream outFile(fileToBeWrittenTo);
-    if (!outFile) {
-        std::cerr << "\nError opening output file" << std::endl;
-        return EXIT_FAILURE;
+
+    for (auto iter : results_map) {
+        std::string fileToBeWrittenTo_iter = fileToBeWrittenTo + "_" + iter.first + ".txt";
+        
+        std::ofstream outFile(fileToBeWrittenTo_iter);
+        
+        if (!outFile) {
+            std::cerr << "\nError opening output file" << std::endl;
+            return EXIT_FAILURE;
+        }
+
+        for (const auto& result : iter.second) {
+            outFile << result.city << "=" << result.min << "/"
+                    << result.sum / result.count << "/" << result.max 
+                    << std::endl;
+        }
+
+        outFile.close();
+
+        std::cout << "\nOutput file " << fileToBeWrittenTo_iter << " has been written to." << std::endl;
+
     }
 
-    for (const auto& result : results) {
-        outFile << result.city << "=" << result.min << "/"
-                << result.sum / result.count << "/" << result.max 
-                << std::endl;
-    }
-
-    outFile.close();
-    std::cout << "\nOutput file " << fileToBeWrittenTo << " has been written to." << std::endl;
-
+    
+    
     std::ofstream timeTrackerOut(timeTrackerFile);
     if (!timeTrackerOut) {
         std::cerr << "\nError opening time tracker file" << std::endl;

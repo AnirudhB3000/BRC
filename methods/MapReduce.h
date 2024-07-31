@@ -95,6 +95,6 @@ public:
     }
 
     std::string getClassName() const override {
-        return "MapReduce Method";
+        return "MapReduceMethod";
     }
 };

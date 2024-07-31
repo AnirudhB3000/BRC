@@ -98,6 +98,6 @@ public:
     }
 
     std::string getClassName() const override {
-        return "Naive Method";
+        return "NaiveMethod";
     }
 };
