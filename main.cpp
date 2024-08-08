@@ -86,8 +86,8 @@ int main(int argc, char *argv[]) {
         }
 
         for (const auto& result : iter.second) {
-            outFile << result.city << "=" << result.min << "/"
-                    << result.sum / result.count << "/" << result.max 
+            outFile << result.city << ";" << result.min << ";"
+                    << result.sum / result.count << ";" << result.max 
                     << std::endl;
         }
 
